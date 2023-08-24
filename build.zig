@@ -8,9 +8,21 @@ pub fn build(b: *std.Build) void {
     });
 
     lib.linkLibC();
-    lib.addCSourceFile("lib/src/lib.c", &.{});
-    lib.addIncludePath("lib/include");
-    lib.addIncludePath("lib/src");
+    lib.addCSourceFile(.{
+        .file = .{ .path = "lib/src/lib.c" },
+        .flags = &.{
+            "-std=gnu99",
+            "-fvisibility=hidden",
+            "-Wall",
+            "-Werxtra",
+            "-Wshadow",
+        },
+    });
+    lib.addIncludePath(.{ .path = "lib/include" });
+    lib.addIncludePath(.{ .path = "lib/src" });
+
+    lib.installHeader("lib/include/tree_sitter/api.h", "tree_sitter/api.h");
+    lib.installHeader("lib/include/tree_sitter/parser.h", "tree_sitter/parser.h");
 
     b.installArtifact(lib);
 }
